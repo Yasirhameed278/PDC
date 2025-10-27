@@ -1,0 +1,32 @@
+
+PDC Midterm Lab Report
+Name: Yasir Hameed
+Roll No: SP22-BCS-032
+
+
+
+Here is a comparison of the execution times for each method.
+
+| Configuration           | Time (s) | Speedup (vs. Sequential) |
+|-------------------------|----------|--------------------------|
+| Sequential (1 worker)   | 1.18   | 1.00x                    |
+| Parallel (2 workers)    | 0.92    | 1.28x                  |
+| Parallel (4 workers)    | 0.68     | 1.74x                  |
+| Parallel (8 workers)    | 0.65     | 1.82x                 |
+| Distributed (2 nodes)   | 1.1      | 2.63x                    |
+
+
+
+
+The best number of workers in my test was 8
+
+Explanation:
+The speedup scaled well up to 8 workers, as this allowed the OS to schedule one compute-heavy process per core. The speedup was 1.82x which is not a perfect 8x. This indicates that while the task is parallelizable, there are still overheads.
+
+
+
+
+
+Parallelism significantly improved performance by transforming a CPU-bound sequential task into a parallel one. The `multiprocessing` library allowed the program to bypass Python's Global Interpreter Lock (GIL) and utilize multiple CPU cores simultaneously. For image processing (resizing, applying watermarks), which is computationally intensive, this meant that 4 or 8 images could be processed in the same time it took the sequential program to process one. This is clear from the speedup from 1.8s down to 0.65s.
+
+However, significant bottlenecks still exist. The primary bottleneck is **Disk I/O**. Even with 8 CPU cores working, all 8 processes are competing to read the original images from the disk and write the new, processed images back to the disk. This I/O contention becomes the new limiting factor. Other bottlenecks include the overhead of process creation and management (which is why speedup is never perfectly linear) and potential memory bandwidth limits as multiple processes try to load and save image data from RAM.
